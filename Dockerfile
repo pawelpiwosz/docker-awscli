@@ -1,9 +1,11 @@
 FROM alpine:latest
 
 RUN apk --no-cache add --update \
-	python3 \
-	python3-pip \
-	ca-certificates 
-RUN pip install awscli
+    python3 \
+    py3-pip \
+    groff \
+    ca-certificates 
+RUN pip3 install pip --upgrade \
+    && pip3 install awscli
 
 ENTRYPOINT ["aws"]
