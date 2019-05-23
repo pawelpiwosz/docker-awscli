@@ -1,0 +1,41 @@
+sudo: required
+dist: trusty
+language: bash
+
+stages:
+  - name: Build test
+  - name: Push container
+    if: branch = master && type = pull_request
+  - name: Check container
+    if: branch = master
+
+services:
+  - docker
+
+install:
+  - sudo apt-add-repository "deb http://archive.ubuntu.com/ubuntu trusty-backports main restricted universe multiverse"
+  - sudo apt-get -qq update
+  - sudo apt-get -t trusty-backports install shellcheck
+  - sudo pip install bashate
+
+jobs:
+  include:
+  - stage: Build test
+    script:
+      - echo 'Build container.'
+      - docker build -t awscli .
+
+  - stage: Push container
+    script:
+      - echo "Push to repo"
+      - docker build -t awscli .
+      - docker images
+      - echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
+      - docker tag awscli ${DOCKER_USERNAME}/awscli
+      - docker push ${DOCKER_USERNAME}/awscli
+      - docker logout
+
+  - stage: Check container
+    script:
+      - docker pull ${DOCKER_USERNAME}/awscli
+      - docker run --rm ${DOCKER_USERNAME}/awscli --version

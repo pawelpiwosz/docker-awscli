@@ -1,8 +1,20 @@
 ## AWS CLI container
 
+#### Tests status
+
+[![Build Status](https://travis-ci.org/pawelpiwosz/docker-awscli.svg?branch=master)](https://travis-ci.org/pawelpiwosz/docker-awscli)
+
 ### Synopsis
 
 Use this container everywhere, without need of creating or copying credentials file.
+
+### Pull image
+
+In order to pull image from dockerhub registry, run:
+
+```
+docker pull almerhor/awscli
+```
 
 ### Build
 
@@ -54,5 +66,3 @@ In order to run with mounted credentials file, run:
 ```
 docker run --rm -v $HOME/.aws:/root/.aws:ro awscli
 ```
-
-
