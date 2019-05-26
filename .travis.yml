@@ -4,7 +4,7 @@ language: bash
 
 stages:
   - name: Build test
-    if: branch !- master
+    if: branch != master
   - name: Push container
     if: branch = master && type = pull_request
   - name: Check container
