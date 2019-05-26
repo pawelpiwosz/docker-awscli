@@ -4,10 +4,11 @@ language: bash
 
 stages:
   - name: Build test
+    if: branch != master
   - name: Push container
     if: branch = master && type = pull_request
   - name: Check container
-    if: branch = master
+    if: branch = master || type = pull_request
 
 services:
   - docker
@@ -28,11 +29,15 @@ jobs:
   - stage: Push container
     script:
       - echo "Push to repo"
-      - docker build -t awscli .
+      - BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+      - VCS_REF=$(git rev-parse --short HEAD)
+      - VER=$(cat VERSION)
+      - docker build --build-arg BUILD_DATE=${BUILD_DATE} --build-arg VCS_REF=${VCS_REF} --build-arg VER=${VER} -t awscli .
       - docker images
       - echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
       - docker tag awscli ${DOCKER_USERNAME}/awscli
       - docker push ${DOCKER_USERNAME}/awscli
+      - curl -X POST https://hooks.microbadger.com/images/almerhor/awscli/6tYDM_YzAZl38pkiiHW2oizproQ=
       - docker logout
 
   - stage: Check container
